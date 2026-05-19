@@ -9,16 +9,18 @@ export async function assignProviders(leadId: string, serviceId: string): Promis
   }
 
   // Business Rules Config
+  // Service IDs: Service 1=7, Service 2=8, Service 3=9
+  // Provider IDs: Provider 1=17, Provider 2=18, ..., Provider 8=24
   const MANDATORY_MAP: Record<number, number[]> = {
-    1: [1],
-    2: [5],
-    3: [1, 4],
+    7: [17],        // Service 1 → Provider 1
+    8: [21],        // Service 2 → Provider 5
+    9: [17, 20],    // Service 3 → Provider 1 AND Provider 4
   };
 
   const POOL_MAP: Record<number, number[]> = {
-    1: [2, 3, 4],
-    2: [6, 7, 8],
-    3: [2, 3, 5, 6, 7, 8],
+    7: [18, 19, 20],              // Service 1 → Providers 2, 3, 4
+    8: [22, 23, 24],              // Service 2 → Providers 6, 7, 8
+    9: [18, 19, 21, 22, 23, 24], // Service 3 → Providers 2, 3, 5, 6, 7, 8
   };
 
   const mandatoryIds = MANDATORY_MAP[sId] || [];
