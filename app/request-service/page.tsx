@@ -14,7 +14,7 @@ export default function RequestService() {
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [assignedProviders, setAssignedProviders] = useState<any[]>([]);
+  const [assignedProviders, setAssignedProviders] = useState<{name: string, leadsReceived: number, monthlyQuota: number}[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,13 +35,13 @@ export default function RequestService() {
         throw new Error(data.error || "An error occurred");
       }
 
-      setAssignedProviders(data.assignments?.map((a: any) => a.provider) || []);
+      setAssignedProviders(data.assignments?.map((a: { provider: {name: string, leadsReceived: number, monthlyQuota: number} }) => a.provider) || []);
       setStatus("success");
       
       // Optionally reset form
       // setFormData({ name: "", phone: "", city: "", serviceId: "1", description: "" });
-    } catch (err: any) {
-      setErrorMessage(err.message);
+    } catch (err: unknown) {
+      setErrorMessage(err instanceof Error ? err.message : String(err));
       setStatus("error");
     }
   };

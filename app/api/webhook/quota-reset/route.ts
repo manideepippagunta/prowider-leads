@@ -44,9 +44,9 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ message: result.message }, { status: result.status });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in quota-reset webhook:', error);
-    if (error?.code === 'P2002') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'P2002') {
       return NextResponse.json({ message: 'already processed' }, { status: 200 });
     }
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

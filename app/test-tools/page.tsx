@@ -36,8 +36,8 @@ export default function TestTools() {
       } else {
         throw new Error(data.error || "Reset failed");
       }
-    } catch (err: any) {
-      addLog(`Reset Error: ${err.message}`, "error");
+    } catch (err: unknown) {
+      addLog(`Reset Error: ${err instanceof Error ? err.message : String(err)}`, "error");
     } finally {
       setLoading(prev => ({ ...prev, reset: false }));
     }
@@ -70,8 +70,8 @@ export default function TestTools() {
           addLog(`Call ${res.index}: Unexpected - ${JSON.stringify(res.data)}`, "error");
         }
       });
-    } catch (err: any) {
-      addLog(`Test Error: ${err.message}`, "error");
+    } catch (err: unknown) {
+      addLog(`Test Error: ${err instanceof Error ? err.message : String(err)}`, "error");
     } finally {
       setLoading(prev => ({ ...prev, idem: false }));
     }
@@ -84,7 +84,7 @@ export default function TestTools() {
 
     const names = ["Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy"];
     
-    const promises = names.map((name, i) => {
+    const promises = names.map((name) => {
       // Intentional duplicate risk setup: Random phone between 10 options, random service 1-3
       // We force a high chance of collision to test the DB constraint
       const randomId = Math.floor(Math.random() * 5); 
@@ -131,8 +131,8 @@ export default function TestTools() {
       });
       
       addLog(`Concurrent Test Finished: ${successCount} Created, ${conflictCount} Conflicts`, "info");
-    } catch (err: any) {
-      addLog(`Test Error: ${err.message}`, "error");
+    } catch (err: unknown) {
+      addLog(`Test Error: ${err instanceof Error ? err.message : String(err)}`, "error");
     } finally {
       setLoading(prev => ({ ...prev, concurrent: false }));
     }

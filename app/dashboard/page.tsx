@@ -3,8 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 
+interface Provider {
+  id: number;
+  name: string;
+  monthlyQuota: number;
+  leadsReceived: number;
+  assignedLeads: { id: number; customerName: string; serviceName: string; assignedAt: string | Date }[];
+}
+
 export default function Dashboard() {
-  const [providers, setProviders] = useState<any[]>([]);
+  const [providers, setProviders] = useState<Provider[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchProviders = async () => {
@@ -35,7 +43,7 @@ export default function Dashboard() {
           // Trigger refetch when new assignments arrive
           fetchProviders();
         }
-      } catch (e) {
+      } catch {
         // ignore parse errors
       }
     };
@@ -116,7 +124,7 @@ export default function Dashboard() {
                         <p className="text-sm text-slate-500 italic text-center py-4">No leads yet</p>
                       ) : (
                         <ul className="space-y-2">
-                          {p.assignedLeads.map((l: any) => (
+                          {p.assignedLeads.map((l: { id: number; customerName: string; serviceName: string; assignedAt: string | Date }) => (
                             <li key={l.id} className="text-sm border-b border-slate-800/50 pb-2 last:border-0 last:pb-0 flex flex-col">
                               <span className="text-slate-200">{l.customerName}</span>
                               <span className="text-xs text-slate-500">{l.serviceName} • {new Date(l.assignedAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>

@@ -47,7 +47,7 @@ export async function assignProviders(leadId: string, serviceId: string): Promis
     const assignedProviderIds = new Set(existingAssignments.map((a) => a.providerId));
 
     // 3. Fetch all relevant providers to check quotas
-    const providerIdsToCheck = [...new Set([...mandatoryIds, ...poolIds])];
+    const providerIdsToCheck = Array.from(new Set([...mandatoryIds, ...poolIds]));
     const providers = await tx.provider.findMany({
       where: {
         id: { in: providerIdsToCheck },

@@ -29,9 +29,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let lead;
     // Save lead to DB
-    lead = await prisma.lead.create({
+    const lead = await prisma.lead.create({
       data: {
         customerName: name,
         phone,
@@ -63,11 +62,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(leadWithAssignments, { status: 201 });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating lead:', error);
     
     // Handle Prisma unique constraint violation safely
-    if (error?.code === 'P2002') {
+    if (typeof error === 'object' && error !== null && 'code' in error && (error as { code: string }).code === 'P2002') {
       return NextResponse.json(
         { error: 'Lead with this phone and service already exists' },
         { status: 409 }
