@@ -12,16 +12,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Resolve service — form may send a name ("Service 1") or a numeric id ("1")
-    // Try by name first, then fall back to numeric ID lookup
+    // Resolve service — form sends "Service 1" or just "1"
     const service = await prisma.service.findFirst({
       where: {
-        OR: [
-          { name: serviceId },
-          { id: isNaN(Number(serviceId)) ? -1 : Number(serviceId) },
-        ],
-      },
+        name: serviceId.startsWith('Service') ? serviceId : `Service ${serviceId}`
+      }
     });
+
     if (!service) {
       return NextResponse.json({ error: `Service not found: "${serviceId}"` }, { status: 400 });
     }

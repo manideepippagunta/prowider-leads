@@ -8,7 +8,7 @@ export default function RequestService() {
     name: "",
     phone: "",
     city: "",
-    serviceId: "1",
+    serviceId: "Service 1",
     description: "",
   });
 
@@ -106,9 +106,9 @@ export default function RequestService() {
                 value={formData.serviceId}
                 onChange={(e) => setFormData({ ...formData, serviceId: e.target.value })}
               >
-                <option value="1">Service 1</option>
-                <option value="2">Service 2</option>
-                <option value="3">Service 3</option>
+                <option value="Service 1">Service 1</option>
+                <option value="Service 2">Service 2</option>
+                <option value="Service 3">Service 3</option>
               </select>
             </div>
 
