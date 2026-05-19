@@ -12,12 +12,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Resolve service — form may send a name ("Service 1") or a numeric id ("1")
+    // Try by name first, then fall back to numeric ID lookup
+    const service = await prisma.service.findFirst({
+      where: {
+        OR: [
+          { name: serviceId },
+          { id: isNaN(Number(serviceId)) ? -1 : Number(serviceId) },
+        ],
+      },
+    });
+    if (!service) {
+      return NextResponse.json({ error: `Service not found: "${serviceId}"` }, { status: 400 });
+    }
+    const resolvedServiceId = service.id;
+
     // Check duplicate explicitly (though P2002 constraint will also catch it)
     const existing = await prisma.lead.findUnique({
       where: {
         phone_serviceId: {
           phone,
-          serviceId: Number(serviceId),
+          serviceId: resolvedServiceId,
         },
       },
     });
@@ -35,14 +50,14 @@ export async function POST(req: NextRequest) {
         customerName: name,
         phone,
         city,
-        serviceId: Number(serviceId),
+        serviceId: resolvedServiceId,
         description,
       },
     });
 
     try {
-      // Call allocateProviders
-      await assignProviders(lead.id.toString(), serviceId.toString());
+      // Call allocateProviders with the resolved numeric service ID
+      await assignProviders(lead.id.toString(), resolvedServiceId.toString());
     } catch (allocErr) {
       // If allocation fails (e.g. quota insufficient), delete the orphaned lead and abort
       await prisma.lead.delete({ where: { id: lead.id } });
